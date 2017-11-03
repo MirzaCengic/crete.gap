@@ -5,7 +5,8 @@
 \title{Function to create absences that account for sampling bias
 Create biased pseudo-absence points.}
 \usage{
-create_bias_absences(species_data, raster_mask, process_boundary, abs_number)
+create_bias_absences(species_data, raster_mask, process_boundary, abs_number,
+  return_spatial = FALSE)
 }
 \arguments{
 \item{species_data}{SpatialPointsDataFrame with species data.}
