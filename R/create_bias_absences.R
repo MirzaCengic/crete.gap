@@ -25,7 +25,7 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
   stopifnot(abs_number > 1)
 
   # load needed packages
-  pacman::p_load(sm, PresenceAbsence, sp, raster)
+  pacman::p_load(ks, PresenceAbsence, sp, raster)
 
   # Create processing mask
   extent_mask <- raster_mask[[1]] >- 1000 # Check this line
@@ -42,8 +42,8 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
   samps <- as.numeric(table(bias)) #Count how many locality points were in the cells
 
   # Create kernel density surface
-  density_surface <- sm.density(kernelXY, weights = samps, display = "none", panel = FALSE)
-  density_points_tmp <- SpatialPoints(expand.grid(x = density_surface$eval.points[, 1], y = density_surface$eval.points[, 2]))
+  density_surface <- kde(kernelXY, w = samps)
+  density_points_tmp <- SpatialPoints(expand.grid(x = density_surface$eval.points[[1]], y = density_surface$eval.points[[2]]))
   density_points_tmp <- SpatialPixelsDataFrame(density_points_tmp, data.frame(kde = array(density_surface$estimate,
                                                                                           length(density_surface$estimate))))
   # Convert to raster
