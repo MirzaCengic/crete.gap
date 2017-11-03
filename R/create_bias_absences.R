@@ -47,7 +47,7 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
   density_points_tmp <- SpatialPixelsDataFrame(density_points_tmp, data.frame(kde = array(density_surface$estimate,
                                                                                           length(density_surface$estimate))))
   # Convert to raster
-  density_raster <- raster(density_points)
+  density_raster <- raster(density_points_tmp)
   density_raster <- resample(density_raster, extent_mask) # Check this
   density_raster_masked <- density_raster * extent_mask #Excludes areas outside the study area based on the Mask layer
   density_points <- rasterToPoints(density_raster_masked, spatial = FALSE) #(Potential) PseudoAbsences are created here
