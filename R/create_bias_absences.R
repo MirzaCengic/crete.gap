@@ -42,7 +42,7 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
   samps <- as.numeric(table(bias)) #Count how many locality points were in the cells
 
   # Create kernel density surface
-  density_surface <- sm.density(kernelXY, weights = samps, display = "none")
+  density_surface <- sm.density(kernelXY, weights = samps, display = "none", panel = FALSE)
   density_points_tmp <- SpatialPoints(expand.grid(x = density_surface$eval.points[, 1], y = density_surface$eval.points[, 2]))
   density_points_tmp <- SpatialPixelsDataFrame(density_points_tmp, data.frame(kde = array(density_surface$estimate,
                                                                                           length(density_surface$estimate))))
@@ -50,7 +50,7 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
   density_raster <- raster(density_points)
   density_raster <- resample(density_raster, extent_mask) # Check this
   density_raster_masked <- density_raster * extent_mask #Excludes areas outside the study area based on the Mask layer
-  density_points <- rasterToPoints(density_raster_masked, spatial = FALSE, panel = FALSE) #(Potential) PseudoAbsences are created here
+  density_points <- rasterToPoints(density_raster_masked, spatial = FALSE) #(Potential) PseudoAbsences are created here
 
   #Now to sample for Pseuooabsences Presence Data
   species_absences <- density_points[sample(seq(1:nrow(density_points)), size = abs_number, replace = TRUE,
