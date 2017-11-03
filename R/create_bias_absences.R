@@ -5,6 +5,8 @@
 # Remove package loading after imports are defined
 
 
+# Code is inspired by Fitzpatrick et al. 2013 R code (DOI: 10.1890/ES13-00066.1)
+
 #' Function to create absences that account for sampling bias
 #' Create biased pseudo-absence points.
 #'
@@ -17,7 +19,7 @@
 #' @export
 #'
 #' @examples
-create_bias_absences <- function(species_data, raster_mask, process_boundary, abs_number)
+create_bias_absences <- function(species_data, raster_mask, process_boundary, abs_number, return_spatial = FALSE)
 {
 
   stopifnot(abs_number > 1)
@@ -55,12 +57,24 @@ create_bias_absences <- function(species_data, raster_mask, process_boundary, ab
                                             prob = density_points[, "layer"]), 1:2]
 
   species_absences_pts <- SpatialPointsDataFrame(species_absences, proj4string = crs(raster_mask), data = as.data.frame(rep(0, abs_number)))
-  names(species_absences_pts) <- "Abs"
+  names(species_absences_pts) <- "PA"
   # species_absences <- SpatialPointsDataFrame(a.sp, data = as.data.frame(rep(1, nrow(species_data))))
   # species_absences$PresAbs <- 0 #Set values for PresAbs column of Absences to 0
   #Single Dataset
-  return(species_absences_pts)
+
+  species_data$PA <- rep(1, nrow(species_data))
+  species_presences_pts <- species_data[, "PA"]
+
+  species_PA_data <- rbind(species_presences_pts, species_absences_pts)
+
+
+  if (isTRUE(return_spatial))
+  {
+    return(species_PA_data)
+  } else {
+    species_PA_data_df <- as.data.frame(cbind(coordinates(species_PA_data), species_PA_data@data$PA))
+    names(species_PA_data_df)[1:2] <- c("X", "Y")
+    return(species_PA_data_df)
+  }
 
 }
-
-
